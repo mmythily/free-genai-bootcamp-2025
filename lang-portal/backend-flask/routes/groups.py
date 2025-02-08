@@ -1,3 +1,11 @@
+"""Routes for managing study groups and their associated words.
+
+This module provides Flask routes for handling group-related operations,
+including retrieving groups, their words, and associated study sessions.
+It serves as the backend API for the group management feature of the
+language learning portal.
+"""
+
 from flask import request, jsonify, g
 from flask_cors import cross_origin
 import json
@@ -6,6 +14,16 @@ def load(app):
   @app.route('/groups', methods=['GET'])
   @cross_origin()
   def get_groups():
+    """Retrieve a paginated list of all study groups.
+    
+    Query Parameters:
+        page (int): Page number for pagination (default: 1)
+        sort_by (str): Column to sort by ('name' or 'words_count', default: 'name')
+        order (str): Sort order ('asc' or 'desc', default: 'asc')
+    
+    Returns:
+        JSON: List of groups with pagination metadata
+    """
     try:
       cursor = app.db.cursor()
 
@@ -61,6 +79,14 @@ def load(app):
   @app.route('/groups/<int:id>', methods=['GET'])
   @cross_origin()
   def get_group(id):
+    """Retrieve details for a specific group.
+    
+    Parameters:
+        id (int): The ID of the group to retrieve
+    
+    Returns:
+        JSON: Group details including name and word count
+    """
     try:
       cursor = app.db.cursor()
 
@@ -86,6 +112,19 @@ def load(app):
   @app.route('/groups/<int:id>/words', methods=['GET'])
   @cross_origin()
   def get_group_words(id):
+    """Retrieve a paginated list of words for a specific group.
+    
+    Parameters:
+        id (int): The ID of the group
+    
+    Query Parameters:
+        page (int): Page number for pagination (default: 1)
+        sort_by (str): Column to sort by (default: 'kanji')
+        order (str): Sort order ('asc' or 'desc', default: 'asc')
+    
+    Returns:
+        JSON: List of words with pagination metadata
+    """
     try:
       cursor = app.db.cursor()
       
@@ -155,11 +194,22 @@ def load(app):
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-  # todo GET /groups/:id/words/raw
-
   @app.route('/groups/<int:id>/study_sessions', methods=['GET'])
   @cross_origin()
   def get_group_study_sessions(id):
+    """Retrieve study sessions for a specific group.
+    
+    Parameters:
+        id (int): The ID of the group
+    
+    Query Parameters:
+        page (int): Page number for pagination (default: 1)
+        sort_by (str): Column to sort by (default: 'created_at')
+        order (str): Sort order ('asc' or 'desc', default: 'desc')
+    
+    Returns:
+        JSON: List of study sessions with pagination metadata
+    """
     try:
       cursor = app.db.cursor()
       

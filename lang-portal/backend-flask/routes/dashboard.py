@@ -1,3 +1,10 @@
+"""Routes for the dashboard functionality.
+
+This module provides Flask routes for the dashboard feature, offering analytics
+and statistics about study sessions, word reviews, and overall learning progress.
+It serves as the backend API for the dashboard component of the language learning portal.
+"""
+
 from flask import jsonify
 from flask_cors import cross_origin
 from datetime import datetime, timedelta
@@ -6,6 +13,18 @@ def load(app):
     @app.route('/dashboard/recent-session', methods=['GET'])
     @cross_origin()
     def get_recent_session():
+        """Retrieve the most recent study session with its statistics.
+
+        Returns:
+            JSON: Most recent session data including:
+                - Session ID
+                - Group ID
+                - Activity name
+                - Creation timestamp
+                - Correct answer count
+                - Wrong answer count
+                Returns null if no sessions exist.
+        """
         try:
             cursor = app.db.cursor()
             
@@ -46,6 +65,18 @@ def load(app):
     @app.route('/dashboard/stats', methods=['GET'])
     @cross_origin()
     def get_study_stats():
+        """Retrieve comprehensive study statistics.
+
+        Returns:
+            JSON: Study statistics including:
+                - Total words count
+                - Total groups count
+                - Total study sessions count
+                - Total reviews count
+                - Review accuracy percentage
+                - Recent activity metrics
+                - Daily study stats for the past week
+        """
         try:
             cursor = app.db.cursor()
             

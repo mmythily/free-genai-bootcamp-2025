@@ -1,3 +1,11 @@
+"""Routes for managing study sessions.
+
+This module provides Flask routes for handling study session operations,
+including creating and retrieving study sessions, managing review items,
+and tracking study progress. It serves as the backend API for the study
+session feature of the language learning portal.
+"""
+
 from flask import request, jsonify, g
 from flask_cors import cross_origin
 from datetime import datetime
@@ -6,9 +14,18 @@ import math
 def load(app):
   # todo /study_sessions POST
 
-  @app.route('/api/study-sessions', methods=['GET'])
+  @app.route('/study-sessions', methods=['GET'])
   @cross_origin()
   def get_study_sessions():
+    """Retrieve a paginated list of all study sessions.
+    
+    Query Parameters:
+        page (int): Page number for pagination (default: 1)
+        per_page (int): Number of items per page (default: 10)
+    
+    Returns:
+        JSON: List of study sessions with pagination metadata
+    """
     try:
       cursor = app.db.cursor()
       
@@ -65,9 +82,18 @@ def load(app):
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-  @app.route('/api/study-sessions/<id>', methods=['GET'])
+  @app.route('/study-sessions/<int:id>', methods=['GET'])
   @cross_origin()
   def get_study_session(id):
+    """Retrieve details for a specific study session.
+    
+    Parameters:
+        id (int): The ID of the study session to retrieve
+    
+    Returns:
+        JSON: Study session details including group, activity, and review statistics.
+              Returns 404 if session not found.
+    """
     try:
       cursor = app.db.cursor()
       
@@ -153,9 +179,14 @@ def load(app):
 
   # todo POST /study_sessions/:id/review
 
-  @app.route('/api/study-sessions/reset', methods=['POST'])
+  @app.route('/study-sessions/reset', methods=['POST'])
   @cross_origin()
   def reset_study_sessions():
+    """Reset all study sessions and review items.
+    
+    Returns:
+        JSON: Success message
+    """
     try:
       cursor = app.db.cursor()
       

@@ -1,12 +1,35 @@
+"""Routes for managing vocabulary words.
+
+This module provides Flask routes for handling word-related operations,
+including retrieving words, their reviews, and managing word groups.
+It serves as the backend API for the vocabulary management feature of
+the language learning portal.
+"""
+
 from flask import request, jsonify, g
 from flask_cors import cross_origin
 import json
 
 def load(app):
+  """Load word-related routes into the Flask application.
+
+  This function registers the routes for handling word-related operations
+  with the Flask application.
+  """
   # Endpoint: GET /words with pagination (50 words per page)
   @app.route('/words', methods=['GET'])
   @cross_origin()
   def get_words():
+    """Retrieve a paginated list of all vocabulary words.
+    
+    Query Parameters:
+        page (int): Page number for pagination (default: 1)
+        sort_by (str): Column to sort by ('kanji', 'romaji', 'english', 'correct_count', 'wrong_count')
+        order (str): Sort order ('asc' or 'desc', default: 'asc')
+    
+    Returns:
+        JSON: List of words with pagination metadata and review statistics
+    """
     try:
       cursor = app.db.cursor()
 
@@ -74,6 +97,14 @@ def load(app):
   @app.route('/words/<int:word_id>', methods=['GET'])
   @cross_origin()
   def get_word(word_id):
+    """Retrieve a single vocabulary word with its details.
+    
+    Parameters:
+        word_id (int): ID of the word to retrieve
+    
+    Returns:
+        JSON: Word details with review statistics and group membership
+    """
     try:
       cursor = app.db.cursor()
       

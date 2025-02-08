@@ -1,11 +1,24 @@
+"""Routes for managing study activities.
+
+This module provides Flask routes for handling study activity-related operations,
+including retrieving, creating, updating, and deleting study activities. It serves
+as the backend API for the study activities feature of the language learning portal.
+"""
+
 from flask import jsonify, request
 from flask_cors import cross_origin
 import math
 
 def load(app):
-    @app.route('/api/study-activities', methods=['GET'])
+    @app.route('/study-activities', methods=['GET'])
     @cross_origin()
     def get_study_activities():
+        """Retrieve all study activities.
+
+        Returns:
+            JSON: List of study activities with their details including id, title,
+                  launch URL and preview URL.
+        """
         cursor = app.db.cursor()
         cursor.execute('SELECT id, name, url, preview_url FROM study_activities')
         activities = cursor.fetchall()
@@ -17,9 +30,18 @@ def load(app):
             'preview_url': activity['preview_url']
         } for activity in activities])
 
-    @app.route('/api/study-activities/<int:id>', methods=['GET'])
+    @app.route('/study-activities/<int:id>', methods=['GET'])
     @cross_origin()
     def get_study_activity(id):
+        """Retrieve a specific study activity by ID.
+
+        Parameters:
+            id (int): The ID of the study activity to retrieve
+
+        Returns:
+            JSON: Study activity details including id, title, launch URL and preview URL.
+                 Returns 404 if activity not found.
+        """
         cursor = app.db.cursor()
         cursor.execute('SELECT id, name, url, preview_url FROM study_activities WHERE id = ?', (id,))
         activity = cursor.fetchone()
@@ -34,9 +56,22 @@ def load(app):
             'preview_url': activity['preview_url']
         })
 
-    @app.route('/api/study-activities/<int:id>/sessions', methods=['GET'])
+    @app.route('/study-activities/<int:id>/sessions', methods=['GET'])
     @cross_origin()
     def get_study_activity_sessions(id):
+        """Retrieve all study sessions for a specific activity.
+
+        Parameters:
+            id (int): The ID of the study activity
+
+        Query Parameters:
+            page (int): Page number for pagination (default: 1)
+            per_page (int): Number of items per page (default: 10)
+
+        Returns:
+            JSON: List of study sessions with pagination metadata.
+                 Returns 404 if activity not found.
+        """
         cursor = app.db.cursor()
         
         # Verify activity exists
@@ -96,9 +131,18 @@ def load(app):
             'total_pages': math.ceil(total_count / per_page)
         })
 
-    @app.route('/api/study-activities/<int:id>/launch', methods=['GET'])
+    @app.route('/study-activities/<int:id>/launch', methods=['GET'])
     @cross_origin()
     def get_study_activity_launch_data(id):
+        """Retrieve launch data for a specific study activity.
+
+        Parameters:
+            id (int): The ID of the study activity
+
+        Returns:
+            JSON: Study activity launch data including activity details and available groups.
+                 Returns 404 if activity not found.
+        """
         cursor = app.db.cursor()
         
         # Get activity details
